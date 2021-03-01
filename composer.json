@@ -1,5 +1,5 @@
 {
-    "name": "AgileBM/ZKLib",
+    "name": "agile-bm/zk-lib",
     "description": "Library to connect ZK biometric time/attendnace devices.",
     "keywords": [
         "zk", "tad", "biometric"
