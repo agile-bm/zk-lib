@@ -2,7 +2,7 @@
 Package to connect ZK biometric time/attendnace devices.
 
 ## How to install ##
-* Via **composer**
+Via **composer**
 ```bash
  composer require agile-bm/zk-lib
  ```
