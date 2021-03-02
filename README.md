@@ -2,8 +2,7 @@
 Package to connect ZK biometric time/attendnace devices
 
 The purpose of this repository is to make [ZKLib library](https://github.com/vodvud/php_zklib) **installable by composer**
----
-# PHP ZKLib #
+# Original description of PHP ZKLib #
 
 PHP library to interacts with ZK Time and Attendance Devices.
 
