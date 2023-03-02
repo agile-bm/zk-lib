@@ -3,11 +3,11 @@ namespace AgileBM\ZKLib\Test;
 
 require __DIR__.'/../autoload.php';
 
-use \AgileBM\ZKLib;
 
-$ip = '10.0.0.14';
+$ip = '10.0.0.24';
 $port = 4370;
 $timeout = 3;
+$password = 0;
 $retry = 4;
 
 $rslt = false;
@@ -18,13 +18,13 @@ if ($intStatus !== 0) {
     return false ;
 }
 
-$objZK = new \AgileBM\ZKLib\ZKLib($ip, $port, $timeout);
+$objZK = new \AgileBM\ZKLib\ZKLib($ip, $port, $timeout, $password);
 
 try {
     do {
         $rslt = $objZK->connect() ;
     } while($retry-- > 0 && !$rslt); 
-} catch (Exception $ex) {
+} catch (\Exception $ex) {
     $strLastError = $ex->getMessage();
     die($strLastError);
 }
@@ -44,7 +44,7 @@ try {
             print("{$item['id']} :: {$item['timestamp']}" . PHP_EOL);
         }
     }
-} catch(Exception $ex) {
+} catch(\Exception $ex) {
     $strLastError = $ex->getMessage();
     print($strLastError);
 }

@@ -15,6 +15,7 @@ class Util
     const CMD_ACK_ERROR = 2001; # Return value for order perform failed
     const CMD_ACK_DATA = 2002; # Return data
     const CMD_ACK_UNAUTH = 2005; # Connection unauthorized
+    const CMD_ACK_AUTH = 1102;
 
     const CMD_PREPARE_DATA = 1500; # Prepares to transmit the data
     const CMD_DATA = 1501; # Transmit a data packet
@@ -246,11 +247,14 @@ class Util
         $u = unpack('H2h1/H2h2', substr($reply, 0, 8));
 
         $command = hexdec($u['h2'] . $u['h1']);
-        /** TODO: Some device can return 'Connection unauthorized' then should check also */
-        if ($command == self::CMD_ACK_OK || $command == self::CMD_ACK_UNAUTH) {
-            return true;
-        } else {
-            return false;
+        switch($command) {
+            case self::CMD_ACK_AUTH:
+            case self::CMD_ACK_OK:
+            case self::CMD_ACK_UNAUTH:
+                return $command;
+                break;
+            default: 
+                return false;
         }
     }
 
@@ -377,6 +381,34 @@ class Util
         }
 
         return $data;
+    }
+
+    static public function makeCommKey(int $key, int $session_id, $ticks= 50) {
+        $k = 0;
+        for($i = 0; $i < 32; $i++) {
+            if ($key & (1 << $i) ) {
+                $k = ($k << 1 | 1 );
+            } else {
+                $k = $k << 1;
+            }
+        }
+        $k += $session_id;
+        $k = pack("I",$k);
+        $k = unpack("C4", $k);
+
+        $k = pack("C4",
+        $k[1] ^ ord('Z'),
+        $k[2] ^ ord('K'),
+        $k[3] ^ ord('S'),
+        $k[4] ^ ord('O')
+        );
+
+        $k = unpack('S2', $k); // S , n , v all in php for short int
+        $k = pack('S2', $k[2], $k[1]);
+        $B = 0xff & 50;
+        $k = unpack('C4', $k);
+        $k = pack('C4', $k[1] ^ $B, $k[2] ^ $B, $B, $k[4]^ $B);
+        return $k;
     }
 
     /**

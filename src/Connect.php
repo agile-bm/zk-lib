@@ -34,9 +34,24 @@ class Connect
                 if (empty($session)) {
                     return false;
                 }
-
                 $self->_session_id = $session;
-                return Util::checkValid($self->_data_recv);
+                $result = Util::checkValid($self->_data_recv);
+                if ($result == Util::CMD_ACK_UNAUTH) {
+                    $command_string = Util::makeCommKey($self->_password, $self->_session_id);
+                    $buf = Util::createHeader(Util::CMD_ACK_AUTH, 0, $self->_session_id, $reply_id, $command_string);
+                    socket_sendto($self->_zkclient, $buf, strlen($buf), 0, $self->_ip, $self->_port);
+                    @socket_recvfrom($self->_zkclient, $self->_data_recv, 1024, 0, $self->_ip, $self->_port);
+                    if (strlen($self->_data_recv) > 0) {
+                        $u = unpack('H2h1/H2h2/H2h3/H2h4/H2h5/H2h6', substr($self->_data_recv, 0, 8));
+                        $session = hexdec($u['h6'].$u['h5']);
+                        if (empty($session)) {
+                            return false;
+                        }
+                        $self->_session_id = $session;
+                        return Util::checkValid($self->_data_recv);
+                    }
+                }
+                return $result;
             } else {
                 return false;
             }

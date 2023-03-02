@@ -7,6 +7,7 @@ class ZKLib
     public $_ip;
     public $_port;
     public $_zkclient;
+    public $_password;
 
     public $_data_recv = '';
     public $_session_id = 0;
@@ -17,10 +18,11 @@ class ZKLib
     * @param string $ip Device IP
     * @param integer $port Default: 4370
     */
-    public function __construct($ip, $port = 4370, $timeout = 10)
+    public function __construct($ip, $port = 4370, $timeout = 10, $password = 0)
     {
         $this->_ip = $ip;
         $this->_port = $port;
+        $this->_password = $password;
 
         $this->_zkclient = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 
